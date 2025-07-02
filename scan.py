@@ -1,4 +1,4 @@
-from pyimagesearch.transform import four_point_transform
+from pyimagesearch.perspective import four_point_transform
 from skimage.filters import threshold_local
 import numpy as np
 import argparse
@@ -33,12 +33,16 @@ print("#2. Find Contours")
 contours = cv2.findContours(edged.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 contours = imutils.grab_contours(contours)
 contours = sorted(contours, key=cv2.contourArea, reverse=True)[:5]
+screenCnt = None
 for contour in contours:
     perimeter = cv2.arcLength(contour, True)
     approx = cv2.approxPolyDP(contour, 0.02 * perimeter, True)
     if len(approx) == 4:
         screenCnt = approx
         break
+if screenCnt is None:
+    print("No contour detected")
+    exit(0)
 cv2.drawContours(image, [screenCnt], -1, (0, 255, 0), 2)
 cv2.imshow("Outline", image)  # outline of the document
 cv2.waitKey(0)
